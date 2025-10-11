@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  scraper:
+    build: .
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    restart: "no"
+    command: ["node","index.js"]

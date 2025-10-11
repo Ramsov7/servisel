@@ -1,0 +1,21 @@
+{
+  "name": "servisel-scraper",
+  "version": "0.1.0",
+  "description": "Dual scraper for official and unofficial phone specs, saves to Supabase",
+  "type": "module",
+  "main": "index.js",
+    "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "node tests/run.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "axios": "^1.5.0",
+    "cheerio": "^1.0.0-rc.12",
+    "he": "^1.2.0",
+    "html-to-text": "^9.0.5",
+    "p-limit": "^4.0.0",
+    "p-retry": "^5.0.0"
+  }
+}
