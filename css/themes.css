@@ -1,0 +1,109 @@
+/* themes.css — light and dark theme tweaks using the variables defined in base.css */
+
+:root[data-theme="light"] {
+  /* Soft, modern light theme */
+  --bg: #00000005;       /* very light bluish background */
+  --bg-2: #ffffff;     /* surfaces and cards */
+  --surface: #ffffff;
+  --text: #0f172a;     /* strong, readable text */
+  --muted: #64748b;    /* cooler muted slate */
+  --primary: #3b82f6;  /* brand blue */
+  --primary-dark: #2563eb;
+  --header-bg: #ffffff; /* header sits on same surface with subtle shadow */
+  --header-text: #0f172a;
+  --nav-bg: rgba(255,255,255,0.96);
+  --card-border: rgba(15,23,42,0.04); /* softer border */
+  --elevation-1: 0 1px 6px rgba(12,18,36,0.06);
+  --elevation-2: 0 8px 28px rgba(12,18,36,0.08);
+  /* modal / input defaults for light theme */
+  --modal-bg: #ffffff;
+  --modal-title: #0f172a;
+  --modal-close: rgba(15,23,42,0.6);
+  --modal-label: rgba(15,23,42,0.7);
+  --modal-input-bg: #ffffff;
+  --modal-input-fg: #0f172a;
+  --modal-input-border: rgba(15,23,42,0.06);
+  --modal-cancel-bg: rgba(15,23,42,0.04);
+  --modal-cancel-fg: #0f172a;
+  --modal-cancel-border: rgba(15,23,42,0.04);
+  --modal-primary-bg: linear-gradient(135deg,#3b82f6,#2563eb);
+  --modal-primary-fg: #ffffff;
+  /* select arrow color for modern selects */
+  --select-arrow: rgba(15,23,42,0.6);
+  --modal-arrow: rgba(15,23,42,0.55);
+  /* FAB action label color for light theme (high contrast on light surfaces) */
+  --fab-action-fg: #0f172a;
+  /* Background used for inactive menu / FAB open-state for light theme */
+  --menu-inactive-bg: linear-gradient(135deg, rgba(15,23,42,0.04), rgba(15,23,42,0.02));
+}
+
+:root[data-theme="dark"] {
+  /* OS-like dark theme: neutral near-black backgrounds, readable text */
+  --bg: #0b0f12;        /* app background */
+  --bg-2: #0f1620;      /* slightly lighter surface bg for gradients */
+  --surface: #0f1720;   /* card / surface color */
+  --text: #e6eef8;      /* high-contrast text */
+  --muted: #94a3b8;     /* subdued secondary text */
+  --primary: #60a5fa;   /* accent */
+  --primary-dark: #2563eb;
+  --header-bg: #0b1116;
+  --nav-bg: rgba(8,12,16,0.9);
+  --card-border: rgba(255,255,255,0.04);
+  --elevation-1: 0 1px 6px rgba(2,6,23,0.6);
+  --elevation-2: 0 8px 28px rgba(2,6,23,0.65);
+  /* modal / input defaults for dark theme */
+  --modal-bg: #0f1724;
+  --modal-title: #e6eef8;
+  --modal-close: rgba(230,238,248,0.72);
+  --modal-label: rgba(230,238,248,0.75);
+  --modal-input-bg: #0b1220;
+  --modal-input-fg: #e6eef8;
+  --modal-input-border: rgba(255,255,255,0.06);
+  --modal-cancel-bg: rgba(255,255,255,0.04);
+  --modal-cancel-fg: #e6eef8;
+  --modal-cancel-border: rgba(255,255,255,0.04);
+  --modal-primary-bg: linear-gradient(135deg,#60a5fa,#2563eb);
+  --modal-primary-fg: #0b1220;
+  /* select arrow color for dark theme */
+  --select-arrow: rgba(230,238,248,0.64);
+  --modal-arrow: rgba(230,238,248,0.56);
+  /* FAB action label color for dark theme (high contrast on dark surfaces) */
+  --fab-action-fg: #e6eef8;
+  /* Background used for inactive menu / FAB open-state for dark theme */
+  --menu-inactive-bg: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+}
+
+/* Accent tweaks for better contrast */
+.item-card { border-color: var(--card-border); }
+.reset-wrap { border-color: rgba(0,0,0,0.06); }
+.search-filter .search-input-wrap input {
+  border-color: rgba(0,0,0,0.06);
+  /* ensure input text follows theme text color and caret uses primary accent */
+  color: var(--text);
+  background: var(--surface);
+  caret-color: var(--primary);
+}
+
+.search-filter .search-input-wrap input::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+/* Ensure selects show proper color */
+.dropdowns select { color: var(--text); background: var(--surface); }
+
+/* Bottom nav tweaks */
+.bottom-nav { background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--bg-2)); border-top: 1px solid rgba(0,0,0,0.04); z-index: 200; }
+
+/* notch to visually wrap the FAB: a circular pseudo-element that sits above the nav's top border */
+/* notch moved to a dedicated .nav-notch element created/positioned by FAB JS for reliability */
+
+/* Modal backdrop tweak per theme */
+.modal-backdrop { background: rgba(2,6,23,0.5); }
+
+/* Light-theme specific tweaks for modal backdrop to avoid heavy dimming */
+:root[data-theme="light"] .modal-backdrop { background: rgba(2,6,23,0.06); }
+
+/* Dark-theme specific tweaks: stronger backdrop and darker bottom-nav */
+:root[data-theme="dark"] .modal-backdrop { background: rgba(2,6,23,0.72); }
+:root[data-theme="dark"] .bottom-nav { background: linear-gradient(180deg, rgba(0,0,0,0.2), var(--bg-2)); border-top: 1px solid rgba(255,255,255,0.04); }
