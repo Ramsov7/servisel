@@ -1,0 +1,1220 @@
+/* components.css — cards, buttons, search-filter, modal, item-cards, fab */
+
+/* Reduce outer card padding so inner item cards have more room */
+.card { background: transparent; padding: 12px; margin-bottom: 12px; position: relative; }
+/* Ensure cards do not overlap centered filter panels */
+.card { z-index: 10; }
+.panel { background: var(--surface); border-radius: var(--radius-md); padding: 14px; box-shadow: var(--elevation-1); }
+
+.search-filter { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.search-filter .search-input-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
+.search-filter .search-input-wrap .left-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; z-index: 3; }
+.search-filter .search-input-wrap input { width: 100%; height: var(--control-h); padding: 0 36px; padding-left: 40px; border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-sm); box-sizing: border-box; background: var(--surface); transition: box-shadow var(--transition-fast) ease, border-color var(--transition-fast) ease, background var(--transition-fast) ease; }
+.search-filter .search-input-wrap input:focus { box-shadow: var(--elevation-2); border-color: var(--primary); }
+
+.reset-wrap { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid rgba(0,0,0,0.08); border-radius: 6px; width: var(--control-h); height: var(--control-h); box-shadow: var(--elevation-1); box-sizing: border-box; color: var(--text); }
+.reset-btn { background: none; border: none; padding: 0; margin: 0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; width: 100%; height: 100%; }
+.reset-wrap .reset-icon { width: 18px; height: 18px; margin: 0; color: var(--muted); display: block; }
+
+/* Mobile/touch: remove default tap highlight and avoid leaving persistent focus state */
+.reset-btn, .reset-wrap {
+	-webkit-tap-highlight-color: transparent; /* iOS/Android highlight */
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+/* Apply consistent tap/active behavior to all buttons to avoid persistent 'pressed' residue */
+button, .btn, .reset-btn, .reset-wrap, .add-btn, .top-bar .notif-btn, .bottom-nav button, .fab, input[type="button"], input[type="submit"] {
+	-webkit-tap-highlight-color: transparent !important;
+	touch-action: manipulation !important;
+	-ms-touch-action: manipulation !important;
+}
+
+/* Neutralize lingering :active visuals that some UAs may leave behind; keep these conservative so
+   short, intentional micro-transforms in other components still work but we prevent stuck states. */
+button:active, .btn:active, .reset-btn:active, .add-btn:active, .top-bar .notif-btn:active, .bottom-nav button:active, .fab:active {
+	/* prefer preserving existing transform if present; use none as a safe default */
+	transform: none !important;
+	box-shadow: none !important;
+}
+
+/* Remove default outline on pointer focus; show a visible ring for keyboard users via :focus-visible */
+.reset-btn:focus { outline: none; }
+.reset-btn:focus-visible {
+	/* Keyboard users see a visible ring that matches theme background */
+	box-shadow: 0 0 0 6px var(--bg, rgba(255,255,255,0.92));
+	border-color: var(--primary);
+	border-radius: 6px;
+}
+
+/* Show the highlight only while the control is being pressed/touched */
+.reset-btn:active, .reset-wrap:active {
+	box-shadow: 0 0 0 6px rgba(59,130,246,0.12);
+	border-color: var(--primary);
+}
+
+/* Keep active/touch transform subtle */
+.reset-btn:active { transform: translateY(0); }
+
+.dropdowns select {
+	display: inline-block;
+	vertical-align: middle;
+	/* allow select width to fit longest option text while staying responsive */
+	width: -moz-fit-content;
+	width: fit-content;
+	width: max-content;
+	max-width: 100%;
+	padding: 10px 14px;
+	border-radius: 10px;
+	border: 1px solid rgba(0,0,0,0.06);
+	background: var(--surface);
+	box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+	color: var(--text);
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	/* subtle modern arrow using layered gradients so it inherits color variables */
+	background-image: linear-gradient(45deg, transparent 50%, var(--select-arrow, var(--muted)) 50%), linear-gradient(135deg, var(--select-arrow, var(--muted)) 50%, transparent 50%);
+	background-position: calc(100% - 14px) calc(50% - 3px), calc(100% - 9px) calc(50% - 3px);
+	background-size: 6px 6px, 6px 6px;
+	background-repeat: no-repeat;
+	transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.dropdowns select option { white-space: nowrap; }
+.select-row { display: flex; gap: 8px; align-items: center; width: 100%; box-sizing: border-box; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 4px; padding-bottom: 6px; }
+
+/* Filter buttons that replace selects */
+.filter-wrap { position: relative; }
+.filter-btn {
+	padding: 10px 14px;
+	border-radius: 12px;
+	border: 1px solid rgba(0,0,0,0.06);
+	/* match the FAB 'X' (open) background so option buttons blend with FAB state */
+	background: var(--menu-inactive-bg, linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)));
+	/* strong background-color fallback to ensure higher-specificity rules don't override */
+	background-color: var(--menu-inactive-bg, rgba(255,255,255,0.03)) !important;
+	color: var(--text);
+	cursor: pointer;
+	min-width: 96px;
+	text-align: center;
+	font-weight: 600;
+	font-size: 14px;
+}
+.filter-btn:focus { outline: none; box-shadow: 0 6px 18px rgba(59,130,246,0.08); }
+
+/* Popup panel shown when the filter button is activated */
+.filter-panel {
+	display: none; /* toggled by JS */
+	position: fixed; /* JS will set top/left to place under button */
+	z-index: 120;
+	width: min(420px, calc(100% - 32px));
+	max-height: calc(100vh - 120px);
+	overflow: auto;
+	padding: 14px;
+	border-radius: 14px;
+	background: linear-gradient(180deg, var(--surface), rgba(255,255,255,0.01));
+	box-shadow: 0 20px 40px rgba(2,6,23,0.18);
+	border: 1px solid rgba(0,0,0,0.06);
+}
+
+	/* blurred backdrop shown behind panel */
+	.filter-backdrop {
+		position: fixed;
+		inset: 0;
+		/* stronger overlay so the app appears dimmed while a filter panel is open */
+		background: rgba(0,0,0,0.28); /* darker overlay to preserve 'gelap' effect */
+		transition: background 160ms ease, opacity 160ms ease;
+		/* no backdrop-filter: blur here — visual blur disabled per request */
+		pointer-events: auto; /* ensure clicks on the backdrop are captured to close panels */
+		z-index: 110; /* below panel (120) */
+	}
+
+	.filter-panel { z-index: 120; }
+
+	/* ensure panel visible when aria-hidden toggled by JS */
+	.filter-panel[aria-hidden="false"] { display: block; }
+.filter-panel .filter-option { display: flex; align-items: center; gap: 12px; padding: 10px 8px; cursor: pointer; border-radius: 8px; }
+.filter-panel .filter-option:hover { background: var(--menu-inactive-bg, linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))); background-color: var(--menu-inactive-bg, rgba(255,255,255,0.02)) !important; }
+.filter-panel .filter-option input { accent-color: var(--primary); width: 18px; height: 18px; }
+.filter-panel .filter-option span { font-size: 14px; color: var(--text); }
+.filter-panel .all-option { padding: 6px 4px 8px 4px; border-bottom: 1px solid rgba(0,0,0,0.04); margin-bottom: 6px; }
+.filter-panel .filter-select-all { width: 100%; border: none; background: transparent; text-align: left; padding: 6px 8px; cursor: pointer; font-weight: 700; }
+
+/* Keep panels inside viewport on small screens */
+@media (max-width: 640px) {
+	.filter-panel { width: calc(100% - 32px); max-height: calc(60vh); }
+}
+
+/* Mobile: reduce outer padding so cards fill more of the screen edge-to-edge */
+@media (max-width: 640px) {
+	/* main padding: make smaller to reduce space around cards */
+	main { padding-left: 10px; padding-right: 10px; }
+
+	/* outer card spacing: reduce padding and margin so cards visually larger */
+	.card { padding: 6px; margin-bottom: 8px; }
+
+	/* slightly tighter grid gap on small screens so cards feel denser without touching edges */
+	.items-grid { gap: 8px; }
+
+	/* reduce card padding and make image fill more of the card to appear larger in two-column layout */
+	.item-card.compact { padding: 3px; }
+	.item-card .card-main { gap: 6px; }
+	.img-wrap { width: 100%; height: 120px; border-radius: 8px; }
+	.card-thumb { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; }
+}
+
+.items-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-items: start; }
+.items-grid.grid-2cols { grid-template-columns: repeat(2, 1fr); }
+
+/* Very narrow phones */
+@media (max-width: 360px) {
+	.items-grid.grid-2cols { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 980px) {
+	.items-grid.grid-2cols { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Units list should visually match items grid so unit cards look identical
+   to item cards. The `.unit-card` elements already carry the `.item-card`
+   class; these rules make the containing list behave like `.items-grid`. */
+.units-list { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-items: start; }
+.units-list.grid-2cols { grid-template-columns: repeat(2, 1fr); }
+
+@media (max-width: 360px) {
+	.units-list.grid-2cols { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 980px) {
+	.units-list.grid-2cols { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Brand and model cards should inherit the item-card visuals */
+.brand-card, .model-card, .master-brand, .master-model { box-sizing: border-box; }
+.brand-cards.items-grid, .models-grid.items-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-items: start; }
+.brand-cards.items-grid.grid-2cols, .models-grid.items-grid.grid-2cols { grid-template-columns: repeat(2, 1fr); }
+
+@media (max-width: 360px) {
+	.brand-cards.items-grid.grid-2cols, .models-grid.items-grid.grid-2cols { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 980px) {
+	.brand-cards.items-grid.grid-2cols, .models-grid.items-grid.grid-2cols { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Ensure brand/model cards visually match item-card structure when present */
+/* No additional overrides needed here; brand/model cards inherit .item-card rules. */
+
+/* Modern card visuals */
+.item-card { background: linear-gradient(180deg, var(--surface) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(10,10,10,0.04); border-radius: 12px; padding: 14px; box-shadow: 0 6px 18px rgba(15,23,42,0.06); transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease; }
+.item-card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
+.item-card h4 { margin: 0 0 6px; font-size: 15px; }
+.item-card p { margin: 2px 0; font-size: 13px; color: var(--muted); }
+
+.item-card.compact { padding: 10px; cursor: pointer; display: flex; flex-direction: column; }
+/* Stack image above text by default (mobile/marketplace style) */
+.item-card .card-main { display: flex; gap: 12px; align-items: center; flex-direction: column; text-align: center; }
+.card-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; flex: 0 0 auto; box-shadow: 0 6px 18px rgba(16,24,40,0.06); }
+	.card-thumb.placeholder { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); color: var(--muted); font-size: 13px; text-align: center; padding: 0; width: 100%; height: 100%; border-radius: 8px; }
+.card-meta { display: flex; flex-direction: column; min-width: 0; align-items: center; }
+.card-title { font-weight: 700; font-size: 15px; line-height: 1.1; white-space: normal; overflow: hidden; text-overflow: ellipsis; }
+.card-stock { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+/* On larger screens show image left of text (classic card) */
+@media (min-width: 640px) {
+	.item-card .card-main { flex-direction: row; align-items: center; text-align: left; }
+	.card-meta { align-items: flex-start; }
+}
+
+/* Image wrapper and spinner */
+.img-wrap { display: inline-flex; width: 80px; height: 80px; border-radius: 10px; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.img-wrap .img-spinner { width: 100%; height: 100%; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); }
+.img-wrap .img-spinner:after { content: ''; width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.28); box-sizing: border-box; animation: spin 1s linear infinite; }
+
+/* Brand logo specific layout: keep a square area and don't crop logo images */
+.img-wrap.brand-logo {
+	width: 90px; /* slightly larger for brand logos */
+	height: 90px;
+	padding: 6px; /* allow breathing room inside the square */
+	box-sizing: border-box;
+}
+.img-wrap.brand-logo .brand-thumb {
+	width: 100%;
+	height: 100%;
+	object-fit: contain; /* do not crop logos */
+	border-radius: 8px; /* subtle rounding to match card style */
+	background: transparent;
+}
+
+/* Remove any drop shadow specifically for brand logos so they appear flat
+   (some thumbnails inherit .card-thumb shadow; override it here) */
+.img-wrap.brand-logo .card-thumb,
+.img-wrap.brand-logo .brand-thumb {
+    box-shadow: none !important;
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.card-details { margin-top: 10px; display: none; }
+.item-card.expanded .card-details { display: block; }
+.details-body p { margin: 6px 0; font-size: 13px; }
+.details-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+.edit-form label { display: block; margin-bottom: 8px; font-size: 13px; }
+.edit-form input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); }
+.edit-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+
+.add-btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; width: calc(var(--control-h) * 1.6); height: calc(var(--control-h) * 1.6); padding: 0; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 22px rgba(37,99,235,0.18); position: fixed; right: var(--fab-right); bottom: calc(var(--fab-gap) + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px)); z-index: 70; transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, right var(--transition-fast) ease; }
+.add-btn svg { width: calc(var(--control-h) * 1.0); height: calc(var(--control-h) * 1.0); display: block; }
+.add-btn svg, .add-btn svg * { fill: #fff !important; color: #fff !important; }
+.add-btn img { width: 32px; height: 32px; display: block; object-fit: contain; filter: brightness(0) invert(1) !important; }
+.add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(59,130,246,0.14); }
+
+/* When add button is placed inside .select-row (left of filters), make it square and inline */
+.select-row > .add-btn {
+	position: relative; /* remove fixed FAB positioning */
+	right: auto;
+	bottom: auto;
+	width: var(--control-h);
+	height: var(--control-h);
+	padding: 0;
+	border-radius: 8px; /* match filter button curvature */
+	box-shadow: none; /* keep subtle to match filters */
+	align-self: center;
+}
+.select-row > .add-btn img, .select-row > .add-btn svg { width: calc(var(--control-h) * 1.1); height: calc(var(--control-h) * 1.1); }
+
+/* Tweak visuals: make header Add button more prominent (primary color, slightly larger) */
+.select-row > .add-btn {
+	background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+	color: #fff;
+	border: none;
+	box-shadow: 0 8px 20px rgba(59,130,246,0.12);
+	font-weight: 700;
+	font-size: 14px;
+	padding: 6px 10px; /* give space for text */
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Make the view-master button visually match the primary Add button (blue with white text) */
+.view-master-btn, .select-row > .view-master-btn {
+	background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	font-weight: 700;
+	font-size: 14px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 6px 12px;
+	border-radius: 8px;
+}
+.select-row > .view-master-btn {
+	/* match the header add button sizing and appearance when placed in select-row */
+	width: auto !important;
+	min-width: 0;
+	height: var(--control-h);
+}
+
+/* Kembali (back) button: neutral style so it doesn't compete with Add primary CTA */
+.select-row > .add-btn[aria-label="Kembali ke Unit"] {
+	background: transparent;
+	background-color: var(--surface);
+	color: var(--text);
+	border: 1px solid rgba(0,0,0,0.06);
+	box-shadow: none;
+	font-weight: 700;
+	/* make back button width follow its text content */
+	width: auto !important;
+	min-width: 0;
+	padding: 6px 10px;
+}
+.select-row > .add-btn[aria-label="Kembali ke Unit"] img {
+	width: 18px;
+	height: 18px;
+	filter: grayscale(1) brightness(0.5) opacity(0.95);
+	display: block;
+}
+
+/* Header back button icon-only (.back-btn) */
+.select-row .back-btn, .back-btn {
+	background: transparent;
+	border: none;
+	padding: 6px;
+	width: var(--control-h);
+	height: var(--control-h);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	cursor: pointer;
+}
+.select-row .back-btn img, .back-btn img {
+	width: 26px;
+	height: 26px;
+	display: block;
+	/* tint icon using subtle grayscale + brightness to approximate var(--muted) */
+	filter: grayscale(1) brightness(0.5) opacity(0.95);
+}
+
+/* Header Master title and brand logo container */
+.master-header { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
+.master-header .master-header-title { color: var(--text); font-size: 16px; font-weight: 700; }
+.master-header .master-header-logo img, .master-header .master-header-logo .master-header-brand-logo { display: block; width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
+.master-header .master-header-logo { display: inline-flex; align-items: center; }
+
+/* Lihat Master: gunakan lebar sesuai teks, sembunyikan ikon bila ada, tetap sejajar dengan filter buttons */
+.select-row > .add-btn[aria-label="Lihat Master"] {
+	width: auto !important;
+	min-width: 0;
+	padding: 6px 12px;
+	height: var(--control-h);
+	font-size: 14px;
+	white-space: nowrap;
+	box-sizing: border-box;
+	gap: 8px;
+	background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+	color: #fff;
+	border: none;
+}
+.select-row > .add-btn[aria-label="Lihat Master"] img,
+.select-row > .add-btn[aria-label="Lihat Master"] svg {
+	display: none !important;
+}
+
+/* Ensure icon sizing is consistent when text present */
+.select-row > .add-btn img, .select-row > .add-btn svg { width: calc(var(--control-h) * 1.1); height: calc(var(--control-h) * 1.1); }
+
+/* Once iconsLoader has inlined or revealed icons, make the Add button icon larger and enforce white
+	 tint. This selector is intentionally specific and uses html.icons-ready to avoid flashing during load. */
+html.icons-ready header .select-row > .add-btn img,
+html.icons-ready header .select-row > .add-btn svg,
+html.icons-ready .add-btn img,
+html.icons-ready .add-btn svg {
+	width: 32px !important;
+	height: 32px !important;
+	/* for inline SVGs */
+	fill: #fff !important;
+	color: #fff !important;
+	/* for external raster/vector images — force a white appearance when possible */
+	filter: brightness(0) saturate(100%) invert(100%) !important;
+}
+
+/* Slight hover affordance differences */
+.select-row > .add-btn:hover { transform: translateY(-2px); }
+.select-row > .add-btn[aria-label="Kembali ke Unit"]:hover { transform: none; filter: brightness(0.98); }
+
+.modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 12000; }
+.modal[aria-hidden="false"] { display: flex; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.32); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 160ms ease; z-index: 11990; }
+.modal-window { position: relative; background: var(--surface); border-radius: var(--radius-md); width: min(92vw, 900px); max-width: calc(100% - 32px); padding: 14px; box-shadow: var(--elevation-2); z-index: 12001; }
+.modal-window .card { background: var(--surface); margin: 0; box-shadow: none; }
+.modal-close { position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); }
+
+/* Modal content helpers for edit popup */
+.modal .modal-content { width: 100%; }
+.modal .modal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+.modal .edit-form label { display: block; margin-bottom: 10px; font-size: 14px; }
+.modal .edit-form input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); box-sizing: border-box; }
+
+/* Image preview inside modal */
+.image-preview { margin-top: 8px; display: none; }
+.image-preview[aria-hidden="false"] { display: block; }
+.image-preview img { max-width: 160px; max-height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); }
+.upload-indicator { padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.04); color: var(--muted); font-size: 13px; }
+
+/* Modern header/settings button style */
+.top-bar .notif-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 6px;
+	border-radius: 10px;
+	background: transparent;
+	border: 1px solid rgba(0,0,0,0.04);
+	transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+	cursor: pointer;
+}
+
+/* Strong mobile overrides (placed at file end to beat base rules). This ensures placeholders and images
+	 fill the image area in the two-column mobile layout where earlier base rules were overriding them. */
+@media (max-width: 640px) {
+	.img-wrap {
+		width: 100% !important;
+		height: 120px !important;
+		border-radius: 8px !important;
+	}
+	.card-thumb {
+		width: 100% !important;
+		height: 100% !important;
+		object-fit: cover !important;
+		border-radius: 8px !important;
+	}
+	.card-thumb.placeholder {
+		padding: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+}
+.top-bar .notif-btn img { width: 20px; height: 20px; display: block; }
+.top-bar .notif-btn:active { transform: translateY(1px) scale(0.995); box-shadow: 0 6px 20px rgba(16,24,40,0.08); background: rgba(0,0,0,0.02); }
+.top-bar .notif-btn:focus-visible { box-shadow: 0 6px 20px rgba(37,99,235,0.12); outline: none; }
+
+/* Modal layout improvements */
+.modal-window { padding: 18px; border-radius: 12px; }
+
+/* Keep modals within viewport: allow modal window to grow but constrain height and make content scrollable */
+.modal-window {
+	max-height: calc(100vh - 48px);
+	display: flex;
+	flex-direction: column;
+}
+.modal-window .modal-content { overflow: auto; max-height: calc(100vh - 200px); padding-right: 6px; }
+
+/* Keep modal actions visible: stick to bottom of modal window */
+.modal-window .modal-actions { position: sticky; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0), var(--surface)); padding-top: 8px; margin-top: 8px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.modal-header h3 { margin: 0; font-size: 18px; color: var(--text); }
+.modal-content { padding: 8px 0 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.04); margin-top: 8px; }
+
+/* Scoped modal form appearance to match screenshot */
+.simple-modal .modal-window { width: min(86vw, 900px); max-width: calc(100% - 32px); padding: 18px; background: var(--modal-bg, #0f1724); box-shadow: 0 18px 48px rgba(2,6,23,0.45); border-radius: 12px; }
+.simple-modal .modal-header h3 { color: var(--modal-title, #ffffff); font-weight: 700; }
+.simple-modal .modal-close { color: var(--modal-close, rgba(255,255,255,0.72)); }
+
+/* make form in modal single-column and inputs full width */
+.simple-modal .form-grid { grid-template-columns: 1fr; gap: 12px; }
+.simple-modal .form-field { gap: 6px; }
+.simple-modal .form-field label { font-size: 13px; color: var(--modal-label, rgba(255,255,255,0.75)); }
+.simple-modal .form-field input[type="text"],
+.simple-modal .form-field input[type="number"],
+.simple-modal .form-field input[type="date"],
+.simple-modal .form-field select,
+.simple-modal .form-field textarea {
+	width: 100%;
+	padding: 12px 14px;
+	border-radius: 10px;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.08));
+	background: var(--modal-input-bg, #ffffff); /* overridable by theme */
+	color: var(--modal-input-fg, #0b1220);
+	font-size: 15px;
+	line-height: 1.2;
+	box-sizing: border-box;
+}
+.simple-modal .form-field textarea { min-height: 110px; }
+
+/* Modern select visuals inside simple-modal: custom arrow, padding and focus ring */
+.simple-modal .modal-window .modal-body .form-field select,
+.form-field select,
+.form-grid select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	padding-right: 40px; /* reserve space for arrow */
+	background-image: linear-gradient(45deg, transparent 50%, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%), linear-gradient(135deg, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%, transparent 50%);
+	background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 13px) calc(50% - 3px);
+	background-size: 8px 8px, 8px 8px;
+	background-repeat: no-repeat;
+	box-shadow: 0 2px 8px rgba(2,6,23,0.06);
+}
+
+.simple-modal .modal-window .modal-body .form-field select:focus,
+.form-field select:focus,
+.form-grid select:focus {
+	outline: none;
+	border-color: rgba(37,99,235,0.7);
+	box-shadow: 0 8px 24px rgba(37,99,235,0.08), 0 0 0 4px rgba(37,99,235,0.06);
+}
+
+/* Placeholder colors to be theme-aware and match other fields */
+.simple-modal .form-field input::placeholder,
+.simple-modal .form-field textarea::placeholder { color: var(--modal-placeholder, rgba(15,23,42,0.45)); }
+
+/* Strong override to ensure all modal fields share the same visual style (fixes inconsistent appearance) */
+.simple-modal .modal-body .form-field input,
+.simple-modal .modal-body .form-field textarea,
+.simple-modal .modal-body .form-field select {
+	background: var(--modal-input-bg, #0b1220) !important;
+	color: var(--modal-input-fg, #e6eef8) !important;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.06)) !important;
+}
+.simple-modal .modal-body .form-field input::placeholder,
+.simple-modal .modal-body .form-field textarea::placeholder { color: var(--modal-placeholder, rgba(230,238,248,0.45)) !important; }
+
+/* masa berlaku field uses same layout */
+.simple-modal .masa-berlaku-field { display: block; }
+
+/* modal actions: pill buttons, aligned right like screenshot */
+.simple-modal .modal-actions { justify-content: flex-end; border-top: none; padding-top: 12px; }
+.simple-modal .modal-actions .btn { border-radius: 20px; padding: 10px 14px; font-size: 14px; }
+.simple-modal .modal-actions .btn.cancel { background: var(--modal-cancel-bg, rgba(255,255,255,0.06)); color: var(--modal-cancel-fg, #fff); border: 1px solid var(--modal-cancel-border, rgba(255,255,255,0.06)); }
+.simple-modal .modal-actions .btn.primary, .simple-modal .modal-actions .btn-primary {
+	/* Use same visual as global .btn-primary so modal Save matches toolbar Add buttons */
+	background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+	color: #fff;
+	box-shadow: 0 8px 20px rgba(59,130,246,0.12);
+	border-color: transparent;
+	border: none;
+}
+.simple-modal .modal-actions .btn.primary:hover, .simple-modal .modal-actions .btn-primary:hover {
+	filter: brightness(1.03);
+	transform: translateY(-1px);
+}
+
+/* Hide native spinner controls for number inputs within the modal so they don't show a contrasting box */
+.simple-modal .modal-window .modal-body input[type=number]::-webkit-outer-spin-button,
+.simple-modal .modal-window .modal-body input[type=number]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+	background: transparent;
+}
+.simple-modal .modal-window .modal-body input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+/* smaller modal on narrow screens */
+@media (max-width: 640px) {
+	.simple-modal .modal-window { width: calc(100% - 28px); padding: 14px; }
+	.modal-window .modal-content { max-height: calc(100vh - 140px); }
+}
+
+/* Larger desktops: provide a generous modal width to avoid narrow popups */
+@media (min-width: 1200px) {
+	.modal-window { width: min(70vw, 1100px); }
+	.simple-modal .modal-window { width: min(64vw, 1000px); }
+}
+
+/* Button primitives used in modal */
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; font-weight: 600; font-size: 14px; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: 0 8px 20px rgba(59,130,246,0.12); border-color: transparent; }
+.btn-primary:active { transform: translateY(1px); }
+.btn-secondary { background: transparent; color: var(--text); border: 1px solid rgba(0,0,0,0.06); }
+
+/* Slightly larger close button for easier touch */
+.modal-close { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: transparent; }
+.modal-close:active { background: rgba(0,0,0,0.03); }
+
+/* Fieldset and radio styling inside modal */
+fieldset#themeFieldset { border: none; padding: 8px 0; margin: 0; }
+fieldset#themeFieldset label { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+fieldset#themeFieldset input[type="radio"] { accent-color: var(--primary); }
+
+
+.muted-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+/* Floating Action Button (FAB) */
+.fab-container { position: fixed; left: 50%; transform: translateX(-50%); /* float so it sits partially over the bottom nav */
+	bottom: calc(var(--bottom-nav-h, 56px) - 18px); z-index: 220; display: flex; align-items: center; flex-direction: column-reverse; gap: 8px; pointer-events: none; }
+.fab { width: 64px; height: 64px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none;
+	/* slightly softer shadow so it reads as floating but not 'outlined' */
+	box-shadow: 0 14px 40px rgba(11,22,60,0.16), 0 6px 18px rgba(11,22,60,0.08); background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; font-size: 28px; pointer-events: auto; transform: translateY(-6px); position: relative; z-index: 222; }
+
+.fab { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+/* remove thick outline on pointer focus but preserve an accessible focus ring for keyboard users */
+.fab:focus { outline: none; }
+/* Prevent pointer/touch interactions from changing the visual position or box-shadow (removes 'pressed' residue) */
+.fab:active, .fab:focus:not(:focus-visible) { box-shadow: 0 14px 40px rgba(11,22,60,0.16); transform: translateY(-6px); }
+
+/* High-specificity safeguard: ensure no other :active selector or UA style changes FAB position/shadow */
+button.fab:active, .fab.fab:active, .fab:active { box-shadow: 0 14px 40px rgba(11,22,60,0.16) !important; transform: translateY(-6px) !important; }
+
+/* Additional overrides to catch UA tap highlights, pseudo-elements and container active states */
+.fab, .fab * { -webkit-tap-highlight-color: transparent !important; }
+.fab:active::after, .fab:active::before, .fab::after, .fab::before { display: none !important; content: none !important; }
+.fab-container:active .fab, .fab-container:focus .fab { transform: translateY(-6px) !important; box-shadow: 0 14px 40px rgba(11,22,60,0.16) !important; }
+.fab { pointer-events: auto; }
+.fab:focus-visible {
+	/* make the focus ring match the current theme background so it blends with theme */
+	box-shadow: 0 0 0 6px var(--bg, rgba(255,255,255,0.92)), 0 14px 40px rgba(11,22,60,0.16);
+}
+
+/* Ensure the inner X doesn't get its own outline or shadow */
+.fab .fab-x { outline: none; box-shadow: none; }
+.fab img { width: 34px; height: 34px; display: block; filter: brightness(0) invert(1); }
+
+/* Target the transaksi.svg specifically when used inside the main FAB and make it slightly smaller
+	so the icon sits comfortably within the FAB shape without altering other icons. */
+.fab.main-fab img[src$="transaksi.svg"] { width: 34px !important; height: 34px !important; }
+
+/* Fallbacks: if JS inlines an SVG or uses a masked .fab-icon, ensure the visual size matches */
+.fab.main-fab svg { width: 34px !important; height: 34px !important; display: inline-block !important; }
+.fab.main-fab .fab-icon { width: 34px !important; height: 34px !important; display: inline-block !important; -webkit-mask-size: contain !important; mask-size: contain !important; }
+.fab-actions { display: none; position: absolute; left: 50%; bottom: calc(100% + 2px); transform: translateX(-50%); width: 220px; height: 96px; pointer-events: none; }
+
+/* (removed FAB mask — notch is implemented on .bottom-nav instead) */
+
+/* Dedicated notch element that sits above the bottom nav to create the FAB cutout */
+.nav-notch {
+	position: fixed;
+	left: 50%;
+	bottom: calc(var(--bottom-nav-h, 56px) - 18px); /* aligns with FAB container bottom */
+	transform: translateX(-50%) translateY(12px);
+	width: 84px;
+	height: 84px;
+	border-radius: 50%;
+	/* use the theme background so the notch visually blends with current theme */
+	background: var(--bg, var(--surface, #fff));
+	/* soften the shadow so the notch doesn't read as a bright separate disc */
+	box-shadow: 0 4px 10px rgba(2,6,23,0.04);
+	z-index: 210; /* below FAB but above bottom nav */
+	pointer-events: none;
+}
+.fab-actions[aria-hidden="false"] { display: block; pointer-events: auto; }
+.fab-action { position: absolute; width: 64px; height: 64px; border-radius: 999px; /* use FAB open-state bg so option buttons match the main FAB */
+	/* Use muted token for the action button background so it visually matches labels; ensure high-contrast foreground */
+	background: var(--muted) !important;
+	background-color: var(--muted) !important;
+	color: var(--fab-action-fg, #fff) !important; border: none; /* keep buttons visually solid for legibility */ cursor: pointer; box-sizing: border-box; padding: 0; display: block;
+	/* rendering hints to avoid flicker during transforms */
+	will-change: transform, opacity;
+	transform: translateZ(0);
+	-webkit-font-smoothing: antialiased;
+	backface-visibility: hidden;
+}
+
+/* positions for 3 radial actions: left, top, right (semicircle) */
+.fab-container.open .fab-action[data-action="beli"] { left: -8px; top: 56px; }
+.fab-container.open .fab-action[data-action="servis"] { left: calc(50% - 32px); top: 8px; }
+.fab-container.open .fab-action[data-action="jual"] { left: calc(100% - 56px); top: 56px; }
+
+/* Icon displayed above the (optional) label; stack icon and text vertically and center them */
+.fab-action .fab-icon {
+	/* hide the icon element on option buttons — user requested no icons */
+	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
+	margin: 0 !important;
+	background-image: none !important;
+	background-color: transparent !important;
+}
+
+.fab-action .fab-icon, .fab-action .fab-label {
+	will-change: transform, opacity;
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* when closing, fade the label and mute the icon quickly to avoid text repaint flicker */
+.fab-container.closing .fab-action .fab-label,
+.fab-container.closing .fab-action .fab-icon {
+	transition: opacity 160ms linear, transform 160ms linear;
+	opacity: 0.0;
+	pointer-events: none;
+}
+
+.fab-action .fab-label {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	max-width: 80%;
+	display: block;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 1.05;
+	font-size: 15px; /* slightly larger for clarity */
+	color: #fff !important; /* force white labels for maximum contrast against var(--muted) */
+	font-weight: 500; /* thinner appearance requested */
+	letter-spacing: 0.02px;
+	text-shadow: 0 0.35px 0 rgba(0,0,0,0.03); /* very subtle lift to preserve legibility */
+}
+.fab-action[data-action="beli"] .fab-icon { -webkit-mask-image: url('../assets/icons/tambah.svg'); mask-image: url('../assets/icons/tambah.svg'); }
+.fab-action[data-action="servis"] .fab-icon { -webkit-mask-image: url('../assets/icons/perbaikan.svg'); mask-image: url('../assets/icons/perbaikan.svg'); }
+.fab-action[data-action="jual"] .fab-icon { -webkit-mask-image: url('../assets/icons/transaksi.svg'); mask-image: url('../assets/icons/transaksi.svg'); }
+
+/* Main FAB morph: purple circle with X centered when open */
+.fab.main-fab { transition: transform 180ms ease, background 180ms ease; }
+.fab-container.open .fab.main-fab { background: var(--menu-inactive-bg, linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))); /* keep the original vertical offset and apply a subtle scale without removing translateY */ transform: translateY(-6px) scale(1.02); }
+.fab.main-fab .fab-x { font-size: 36px; line-height: 1; color: var(--muted); display: inline-block; transform: translateY(-1px); }
+
+/* make the 'X' color match the muted token when FAB is open */
+.fab-container.open .fab.main-fab .fab-x { color: var(--muted) !important; }
+
+/* X background: keep layout but ensure color uses muted token */
+.fab-container.open .fab.main-fab .fab-x {
+	color: var(--muted) !important;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	height: auto;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	outline: none;
+}
+
+/* entry animation: actions appear to come out from the FAB center
+   We animate from a per-action offset (--from-x/--from-y) into the final positioned spot. */
+.fab-container.open .fab-action {
+	opacity: 0;
+	/* start shifted from the final spot so it looks like it's coming from the FAB center */
+	transform: translate(var(--from-x, 0px), var(--from-y, 12px)) scale(0.28);
+	transform-origin: center center;
+	animation: fab-emerge 320ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+.fab-container.open .fab-action[data-action="servis"] { animation-delay: 40ms; }
+.fab-container.open .fab-action[data-action="beli"] { animation-delay: 80ms; }
+.fab-container.open .fab-action[data-action="jual"] { animation-delay: 120ms; }
+
+/* per-action starting offsets (approximate values to align with the FAB center inside .fab-actions) */
+.fab-container.open .fab-action[data-action="beli"]  { left: -8px; top: 56px; --from-x: 36px;  --from-y: 36px; }
+.fab-container.open .fab-action[data-action="servis"]{ left: calc(50% - 32px); top: 8px;  --from-x: 0px;   --from-y: 12px; }
+.fab-container.open .fab-action[data-action="jual"]  { left: calc(100% - 56px); top: 56px; --from-x: -36px; --from-y: 36px; }
+
+/* Make each action slightly less transparent individually so labels/icons (if present) remain legible.
+	These override the general .fab-action rule and ensure each button is more solid across themes. */
+.fab-action[data-action="beli"] { background-color: var(--muted) !important; }
+.fab-action[data-action="servis"] { background-color: var(--muted) !important; }
+.fab-action[data-action="jual"] { background-color: var(--muted) !important; }
+
+@keyframes fab-emerge {
+	from {
+		opacity: 0;
+		transform: translate(var(--from-x, 0px), var(--from-y, 12px)) scale(0.28);
+	}
+	60% {
+		opacity: 1;
+		transform: translate(calc(var(--from-x, 0px) * 0.08), calc(var(--from-y, 12px) * 0.08)) scale(1.06);
+	}
+	to {
+		opacity: 1;
+		transform: translate(0,0) scale(1);
+	}
+}
+/* closing animation: actions retreat back into the FAB center */
+@keyframes fab-retreat {
+	from {
+		opacity: 1;
+		transform: translate3d(0,0,0) scale(1);
+	}
+	60% {
+		opacity: 0.28;
+		transform: translate3d(calc(var(--from-x, 0px) * 0.2), calc(var(--from-y, 12px) * 0.2), 0) scale(0.9);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(var(--from-x, 0px), var(--from-y, 12px), 0) scale(0.28);
+	}
+}
+
+/* When closing, play a retreat animation for each action (staggered) */
+.fab-container.closing .fab-action {
+	/* Ensure the element starts from the same visual state the retreat expects
+	   so the browser doesn't have to recompute a differing 'from' value which
+	   can cause a visible flicker. These match the 'from' keyframe above. */
+	opacity: 1;
+	transform: translate3d(0,0,0) scale(1);
+	animation-name: fab-retreat;
+	animation-duration: 320ms;
+	animation-timing-function: cubic-bezier(.2,.9,.2,1);
+	animation-fill-mode: forwards;
+	will-change: transform, opacity;
+	transform-style: preserve-3d;
+}
+.fab-container.closing .fab-action[data-action="jual"] { animation-delay: 40ms; }
+.fab-container.closing .fab-action[data-action="servis"] { animation-delay: 80ms; }
+.fab-container.closing .fab-action[data-action="beli"] { animation-delay: 120ms; }
+
+.simple-modal { z-index: 10100; }
+/* Avoid forcing an overly narrow fixed width here — use responsive sizing so simple modals
+	like 'Tambah Pembelian Unit' expand on desktop but stay within viewport on small devices. */
+.simple-modal .modal-window { width: min(86vw, 900px); max-width: calc(100% - 32px); }
+
+/* When a modal is open, ensure page chrome (FAB, bottom-nav) recedes and does not block the modal.
+   We use body.modal-open (toggled by createSimpleModal/closeModalByEl) to apply these styles. */
+/* When a modal is open, blur the entire app chrome (header, main content and nav)
+   and make it non-interactive so only the modal remains active.
+   Modal(s) have a higher z-index so they appear above the blurred content. */
+body.modal-open header,
+body.modal-open main,
+body.modal-open .fab-container,
+body.modal-open .bottom-nav,
+body.modal-open .nav-notch,
+body.modal-open .top-bar,
+body.modal-open .fab-backdrop,
+body.modal-open .fab-actions {
+	filter: blur(6px) saturate(0.9);
+	opacity: 0.72;
+	pointer-events: none; /* ensure modal receives interactions */
+	transition: filter 180ms ease, opacity 180ms ease;
+}
+
+/* Keep the modal elements themselves fully interactive and on top */
+.modal,
+.modal * {
+	filter: none !important;
+	pointer-events: auto !important;
+}
+
+/* FAB backdrop to blur the app when FAB actions are open */
+.fab-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.12);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	z-index: 130;
+	display: none;
+}
+.fab-backdrop[aria-hidden="false"] { display: block; }
+
+/* When the Pembelian Unit page is active we want to hide everything else
+   so the form appears as a dedicated page. The JS will add/remove
+   `pembelian-unit-active` on <body> when showing/hiding this page. */
+body.pembelian-unit-active header,
+body.pembelian-unit-active .bottom-nav,
+body.pembelian-unit-active .fab-container,
+body.pembelian-unit-active .nav-notch,
+body.pembelian-unit-active .top-bar,
+body.pembelian-unit-active #header-dropdowns,
+body.pembelian-unit-active .filter-panels,
+body.pembelian-unit-active .loading-overlay {
+	display: none !important;
+	pointer-events: none !important;
+}
+
+/* Hide all other main sections except pembelian-unit */
+body.pembelian-unit-active main section:not(#pembelian-unit) {
+	display: none !important;
+}
+
+/* Ensure pembelian-unit takes full available space */
+body.pembelian-unit-active main #pembelian-unit {
+	display: block !important;
+	padding: 12px !important;
+}
+
+/* Modern form styles for the create pembelian modal */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 13px; color: var(--muted); }
+.form-field input[type="text"], .form-field input[type="number"], .form-field input[type="date"], .form-field textarea { padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.06); background: var(--surface); box-sizing: border-box; }
+.form-field textarea { min-height: 80px; resize: vertical; }
+
+/* Allow specific form rows to display inline (label + input + hint on one line)
+	Use the class `inline-row` on a .form-field to switch that row to a horizontal layout. */
+.form-field.inline-row { flex-direction: row; align-items: center; gap: 10px; }
+.form-field.inline-row label { margin: 0; white-space: nowrap; }
+.form-field.inline-row .muted { margin-left: 6px; white-space: nowrap; font-size: 12px; color: var(--muted); }
+.simple-modal .form-field.inline-row { flex-direction: row; align-items: center; gap: 10px; }
+.modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+.hint { font-size: 13px; color: var(--muted); }
+
+/* Strong high-specificity override for .simple-modal fields to ensure consistent appearance
+   Places this after generic .form-field rules so it always wins. */
+.simple-modal .modal-window .modal-body .form-field input[type="text"],
+.simple-modal .modal-window .modal-body .form-field input[type="number"],
+.simple-modal .modal-window .modal-body .form-field input[type="date"],
+.simple-modal .modal-window .modal-body .form-field select,
+.simple-modal .modal-window .modal-body .form-field textarea {
+	background: var(--modal-input-bg, #0b1220) !important;
+	color: var(--modal-input-fg, #e6eef8) !important;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.06)) !important;
+	padding: 12px 14px !important;
+	border-radius: 10px !important;
+	font-size: 15px !important;
+	box-shadow: none !important;
+}
+.simple-modal .modal-window .modal-body .form-field input::placeholder,
+.simple-modal .modal-window .modal-body .form-field textarea::placeholder { color: var(--modal-placeholder, rgba(230,238,248,0.45)) !important; }
+
+/* Make inputs a consistent height (match Harga field). Use min-height so textarea can still grow. */
+.simple-modal .modal-window .modal-body .form-field input[type="text"],
+.simple-modal .modal-window .modal-body .form-field input[type="number"],
+.simple-modal .modal-window .modal-body .form-field input[type="date"],
+.simple-modal .modal-window .modal-body .form-field select {
+	min-height: 44px !important;
+	line-height: 20px !important;
+}
+
+/* Force exact pixel height (override browser default rendering differences) */
+.simple-modal .modal-window .modal-body .form-field input[type="text"],
+.simple-modal .modal-window .modal-body .form-field input[type="number"],
+.simple-modal .modal-window .modal-body .form-field input[type="date"],
+.simple-modal .modal-window .modal-body .form-field select {
+	height: 44px !important;
+}
+
+/* Ensure inputs truly span full width and ignore any ancestor constraints */
+.simple-modal .modal-window .modal-body .form-field input,
+.simple-modal .modal-window .modal-body .form-field select,
+.simple-modal .modal-window .modal-body .form-field textarea {
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+}
+
+/* Normalize ALL modal forms (not just .simple-modal) so 'Tambah Item Baru' and 'Tambah Pembelian' match Jasa modal */
+.modal-window .modal-body .form-field input,
+.modal-window .modal-body .form-field textarea,
+.modal-window .modal-body .form-field select,
+.modal-window .modal-body .form-field .file-input-wrap {
+	background: var(--modal-input-bg, #0b1220) !important;
+	color: var(--modal-input-fg, #e6eef8) !important;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.06)) !important;
+	padding: 12px 14px !important;
+	border-radius: 10px !important;
+	font-size: 15px !important;
+	line-height: 20px !important;
+	box-shadow: none !important;
+	min-height: 44px !important;
+	height: 44px !important;
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+}
+
+.modal-window .modal-body .form-field textarea { min-height: 110px !important; height: auto !important; }
+.modal-window .modal-body .form-field input::placeholder,
+.modal-window .modal-body .form-field textarea::placeholder { color: var(--modal-placeholder, rgba(230,238,248,0.45)) !important; }
+
+/* Style file input wrapper so the Choose File looks themed */
+.modal-window .modal-body .form-field .file-input-wrap { display: flex; align-items: center; gap: 12px; padding: 10px 12px !important; border-radius: 10px !important; }
+.modal-window .modal-body .form-field input[type=file] { background: transparent !important; border: none !important; padding: 0 !important; height: auto !important; }
+
+/* Ensure select arrow for modal and regular form selects remains visible and themed */
+.modal-window .modal-body .form-field select { padding-right: 40px !important; background-image: linear-gradient(45deg, transparent 50%, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%), linear-gradient(135deg, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%, transparent 50%) !important; background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 13px) calc(50% - 3px) !important; background-size: 8px 8px, 8px 8px !important; }
+
+/* Ensure edit-form (used by Tambah Item Baru) inputs/selects/textarea match modal visuals even when markup differs */
+.modal-window .modal-content .edit-form label,
+.modal-window .modal-content .edit-form label input,
+.modal-window .modal-content .edit-form label select,
+.modal-window .modal-content .edit-form label textarea {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+}
+.modal-window .modal-content .edit-form label input,
+.modal-window .modal-content .edit-form label select,
+.modal-window .modal-content .edit-form label textarea {
+	background: var(--modal-input-bg, #0b1220) !important;
+	color: var(--modal-input-fg, #e6eef8) !important;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.06)) !important;
+	padding: 12px 14px !important;
+	border-radius: 10px !important;
+	font-size: 15px !important;
+	line-height: 20px !important;
+	min-height: 44px !important;
+	height: 44px !important;
+}
+.modal-window .modal-content .edit-form label textarea { min-height: 110px !important; height: auto !important; }
+.modal-window .modal-content .edit-form label input::placeholder,
+.modal-window .modal-content .edit-form label textarea::placeholder { color: var(--modal-placeholder, rgba(230,238,248,0.45)) !important; }
+
+/* Style the file input inside edit-form so it visually matches other fields as much as browser allows */
+.modal-window .modal-content .edit-form label input[type="file"] {
+	background: var(--modal-input-bg, #0b1220) !important;
+	color: var(--modal-input-fg, #e6eef8) !important;
+	border: 1px solid var(--modal-input-border, rgba(255,255,255,0.06)) !important;
+	padding: 10px 12px !important;
+	border-radius: 10px !important;
+	font-size: 14px !important;
+	height: auto !important;
+}
+
+/* Ensure selects in edit-form retain the custom arrow and right padding */
+.modal-window .modal-content .edit-form label select {
+	padding-right: 40px !important;
+	background-image: linear-gradient(45deg, transparent 50%, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%), linear-gradient(135deg, var(--modal-arrow, var(--modal-placeholder, rgba(230,238,248,0.45))) 50%, transparent 50%) !important;
+	background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 13px) calc(50% - 3px) !important;
+	background-size: 8px 8px, 8px 8px !important;
+	background-repeat: no-repeat !important;
+}
+
+/* Keep textarea flexible but visually aligned */
+.simple-modal .modal-window .modal-body .form-field textarea { height: auto !important; min-height: 110px !important; }
+
+/* Responsive tweaks for the 'Tambah Pembelian' form on narrow viewports */
+@media (max-width: 640px) {
+	.form-grid { grid-template-columns: 1fr; gap: 12px; }
+	.form-grid .full { grid-column: 1 / -1; }
+	.modal-window { width: calc(100% - 22px); margin: 8px; padding: 14px; }
+	.form-field input[type="text"], .form-field input[type="number"], .form-field input[type="date"], .form-field textarea { padding: 12px 14px; font-size: 15px; }
+	.modal .modal-actions { flex-direction: column-reverse; gap: 8px; }
+	.modal .modal-actions .btn { width: 100%; padding: 12px 14px; font-size: 16px; }
+	.autocomplete-list { width: calc(100% - 40px); left: 20px !important; right: 20px; max-width: calc(100% - 40px); }
+	.autocomplete-item { padding: 12px 14px; font-size: 15px; }
+	/* Ensure the item lookup message is readable and spaced */
+	.item-lookup { padding: 8px 6px; font-size: 15px; }
+}
+
+
+/* Autocomplete dropdown used by Beli form */
+.autocomplete-list {
+	position: absolute;
+	background: var(--surface);
+	border: 1px solid rgba(0,0,0,0.06);
+	box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+	border-radius: 10px;
+	z-index: 200;
+	width: 320px;
+	max-height: 220px;
+	overflow: auto;
+}
+.autocomplete-item { padding: 8px 10px; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+.autocomplete-item:hover, .autocomplete-item.active { background: rgba(0,0,0,0.03); }
+.autocomplete-item .meta { color: var(--muted); font-size: 13px; }
+
+/* Jasa page styles (renamed from Biaya) */
+.jasa-item,
+.jasa-item *,
+.jasa-list .btn,
+.jasa-toolbar #add-jasa,
+button,
+a {
+	-webkit-tap-highlight-color: transparent; /* remove blue highlight on mobile/touch */
+}
+
+.jasa-item:focus,
+.jasa-item *:focus,
+button:focus,
+a:focus,
+.jasa-toolbar #add-jasa:focus {
+	outline: none; /* avoid blue outline on touch/click */
+}
+
+/* Keep visible focus for keyboard users */
+:focus-visible {
+	outline: 3px solid rgba(37,99,235,0.12);
+	outline-offset: 2px;
+}
+
+.jasa-body { padding: 12px; }
+.jasa-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.jasa-toolbar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+.jasa-toolbar .title { font-size: 18px; font-weight: 700; display: none; }
+.jasa-list { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); align-items: start; }
+.jasa-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01)); border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+.jasa-main { display: flex; flex-direction: column; gap: 6px; }
+.jasa-name { font-weight: 700; font-size: 15px; }
+.jasa-meta { font-size: 13px; color: var(--muted); }
+.jasa-actions { display: flex; gap: 8px; align-items: center; }
+.jasa-price { font-weight: 800; color: var(--text); }
+.jasa-item .btn { padding: 8px 12px; }
+
+/* unified empty-state appearance for Item / Unit / Jasa */
+.empty-state {
+	padding: 18px;
+	text-align: center;
+	color: var(--muted);
+	background: rgba(0,0,0,0.02);
+	border-radius: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 220px; /* same height across lists */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.empty-state p { margin: 0; font-size: 16px; line-height: 1.45; font-weight: 400; color: var(--muted); opacity: 0.6; }
+
+.empty-centered { /* legacy helper — kept for compatibility */
+	display: flex; align-items: center; justify-content: center; min-height: 220px; padding-top: 0;
+}
+
+@media (max-width: 640px) {
+	.empty-state p { font-size: 15px; }
+}
+
+/* Ensure empty placeholders span full width inside grid containers so they
+	 visually match across Items, Units, and Jasa list layouts. */
+.items-grid .empty-state,
+.models-grid .empty-state,
+.units-list .empty-state,
+.jasa-list .empty-state {
+		grid-column: 1 / -1; /* span all columns */
+		width: 100%;
+		box-sizing: border-box;
+		align-self: stretch; /* ensure flex containers (jasa-list) stretch the element */
+		margin: 0; /* remove any unexpected margins */
+}
+
+/* Stronger, Jasa-specific override to force exact pixel parity with items/units empty placeholders.
+   This guards against other layout rules or inline styles that may affect the Jasa list. */
+.card .jasa-list .empty-state,
+.card .jasa-list > .empty-state {
+	grid-column: 1 / -1 !important;
+	width: 100% !important;
+	min-height: 220px !important;
+	padding: 18px !important;
+	box-sizing: border-box !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	margin: 0 !important;
+}
+
+/* Make the jasa card-body behave like the items container so placeholders align
+   exactly: remove the extra inner padding that shifts the empty-state down. */
+.card > .jasa-body {
+	padding: 0 !important;
+}
+
+/* Ensure if the empty-state sits inside a .jasa-body it still has the expected
+   internal padding and min-height (we set these explicitly to guarantee parity). */
+.card .jasa-body .empty-state {
+	padding: 18px !important;
+	min-height: 220px !important;
+	box-sizing: border-box !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	margin: 0 !important;
+}
+.jasa-toolbar .btn { padding: 12px 18px; font-size: 15px; }
+
+/* Slightly lift the Add Jasa button so it appears a bit higher inside the toolbar */
+.jasa-toolbar #add-jasa {
+	transform: translateY(-8px); /* default slightly higher */
+	transition: transform 180ms ease;
+}
+/* Make hover lift present but smaller (less extreme) */
+.jasa-toolbar #add-jasa:hover {
+	transform: translateY(-9px);
+}
+
+/* Active (pressed) state: reduce jump by moving back slightly from hover so click feels natural */
+.jasa-toolbar #add-jasa:active {
+	transform: translateY(-7px) !important;
+	/* subtle pressed shadow to indicate depth without large movement */
+	box-shadow: 0 6px 14px rgba(37,99,235,0.10) !important;
+}
+
+/* Visible focus for keyboard users */
+.jasa-toolbar #add-jasa:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 6px rgba(37,99,235,0.06), 0 6px 18px rgba(37,99,235,0.10);
+}
+
+@media (max-width: 640px) {
+	.jasa-item { padding: 10px; border-radius: 10px; }
+	.jasa-toolbar { margin-bottom: 10px; }
+	/* reduce lift on small screens to avoid layout issues */
+	.jasa-toolbar #add-jasa { transform: translateY(-6px); }
+	.jasa-price { font-size: 14px; }
+}
+
+/* On touch devices, disable hover transforms to prevent persistent lift artifacts */
+@media (pointer: coarse) {
+    .item-card:hover, .item-card:active, .item-card.compact:hover { transform: none !important; box-shadow: 0 6px 18px rgba(15,23,42,0.06) !important; }
+    .bottom-nav button:hover, .bottom-nav button:active { transform: none !important; }
+}
+
+

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Servisel</title>
+
+    <!-- Apply theme early to avoid flash of opposite theme before JS runs -->
+    <script src="js/ui/theme-init.js" defer></script>
+
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/themes.css" />
+    <link rel="icon" href="assets/logos/servisel-transparan.png" type="image/png" />
+    <!-- Inline critical CSS: hide header immediately to avoid flash before external CSS loads -->
+    <style>
+      /* Hide header until JS explicitly shows it by adding html.app-ready.show-header */
+      header {
+        display: none !important;
+      }
+      html.app-ready.show-header header {
+        display: block !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading overlay: shown until app is ready (icons & navigation initialized) -->
+    <div id="loading-overlay" aria-hidden="false">
+      <div class="loading-inner">
+        <img
+          src="assets/logos/servisel-transparan.png"
+          alt="Servisel"
+          class="loading-logo"
+        />
+        <div class="loading-spinner" aria-hidden="true">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+    <header style="display: none">
+      <div class="top-bar">
+        <div class="user-profile">
+          <span>Total Saldo : Rp.38.705.843</span>
+        </div>
+        <button
+          class="notif-btn"
+          aria-label="Notifikasi"
+          aria-controls="settings-modal"
+          aria-expanded="false"
+        >
+          <img src="assets/icons/pengaturan.svg" alt="Notifikasi" />
+        </button>
+      </div>
+
+      <!-- Header controls: search + filter + dropdowns (merged into one wrapper) -->
+      <div
+        id="header-dropdowns"
+        class="header-controls dropdowns"
+        aria-hidden="true"
+      >
+        <div id="header-search" class="search-filter">
+          <div class="search-input-wrap">
+            <img class="left-icon" src="assets/icons/cari.svg" alt="Cari" />
+            <input type="text" id="searchInput" placeholder="Cari" />
+          </div>
+          <div class="reset-wrap" role="group" aria-label="Reset">
+            <button class="reset-btn" aria-label="Reset opsi">
+              <img class="reset-icon" src="assets/icons/undo.svg" alt="Reset" />
+            </button>
+          </div>
+        </div>
+
+        <!-- selects remain here; wrapper has both classes so CSS/JS continue to work -->
+        <div class="select-row">
+          <!-- Add button placed left of filters and styled to match filter height -->
+          <button class="add-btn" aria-label="Tambah Item">
+            <img src="assets/icons/tambah.svg" alt="Tambah" />
+          </button>
+          <!-- Converted selects to buttons that open small popup panels -->
+          <label for="resetKategori" class="visually-hidden">Kategori</label>
+          <div class="filter-wrap">
+            <button
+              id="resetKategori"
+              class="filter-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="panel-kategori"
+            >
+              Kategori
+            </button>
+            <div
+              id="panel-kategori"
+              class="filter-panel"
+              role="dialog"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+          <div class="filter-wrap">
+            <button
+              id="resetStok"
+              class="filter-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="panel-stok"
+            >
+              Stok
+            </button>
+            <div
+              id="panel-stok"
+              class="filter-panel"
+              role="dialog"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+          <div class="filter-wrap">
+            <button
+              id="resetJenis"
+              class="filter-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="panel-jenis"
+            >
+              Kondisi
+            </button>
+            <div
+              id="panel-jenis"
+              class="filter-panel"
+              role="dialog"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+          <div class="filter-wrap">
+            <button
+              id="resetStatus"
+              class="filter-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="panel-status"
+            >
+              Status
+            </button>
+            <div
+              id="panel-status"
+              class="filter-panel"
+              role="dialog"
+              aria-hidden="true"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="beranda" class="active">
+        <div class="card">
+          <h3>Arus Kas Bulanan</h3>
+          <canvas id="cashflowChart" height="150"></canvas>
+        </div>
+      </section>
+
+      <section id="transaksi">
+        <div class="card">
+          <h3>Daftar Transaksi</h3>
+          <div id="daftarTransaksi">
+            <p>Data transaksi akan tampil di sini.</p>
+          </div>
+          <button>+ Tambah Transaksi Pembelian</button>
+          <button>+ Tambah Transaksi Penjualan</button>
+        </div>
+      </section>
+
+      <section id="unit">
+        <div class="card"></div>
+      </section>
+
+      <section id="master">
+        <div class="card"></div>
+      </section>
+
+      <section id="item">
+        <div class="card">
+          <!-- search-filter moved to header (header-search) -->
+
+          <div id="items-list"></div>
+        </div>
+      </section>
+
+      <section id="lainnya">
+        <div class="card">
+          <!-- content rendered by jasaUI (jasa list) -->
+        </div>
+      </section>
+
+      <!-- Pengaturan modal will be injected/handled separately -->
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi bawah">
+      <button data-target="beranda" class="active">
+        <img src="assets/icons/rumah.svg" alt="Beranda" />
+        <span>Beranda</span>
+      </button>
+      <button data-target="unit">
+        <img src="assets/icons/device.svg" alt="Unit" />
+        <span>Unit</span>
+      </button>
+      <button data-target="item">
+        <img src="assets/icons/item.svg" alt="Item" />
+        <span>Item</span>
+      </button>
+      <button data-target="lainnya">
+        <img src="assets/icons/perbaikan.svg" alt="Jasa" />
+        <span>Jasa</span>
+      </button>
+      <!-- pengaturan removed from bottom-nav (handled as modal) -->
+    </nav>
+
+    <!-- Minimal FAB markup (fallback): present statically so users can access quick actions even
+         if JS hasn't injected the FAB. JS will enhance or replace behavior at runtime. -->
+    <div class="fab-backdrop" aria-hidden="true"></div>
+    <div class="fab-container">
+      <button class="fab main-fab" aria-label="Aksi cepat">
+        <img src="assets/icons/transaksi.svg" alt="Transaksi" />
+      </button>
+      <div class="fab-actions" aria-hidden="true" style="display: none">
+        <button class="fab-action" data-action="servis">
+          <span class="fab-label">Servis</span>
+        </button>
+        <button class="fab-action" data-action="beli">
+          <span class="fab-label">Beli</span>
+        </button>
+        <button class="fab-action" data-action="jual">
+          <span class="fab-label">Jual</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-action="close"></div>
+      <div
+        class="modal-window"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settingsTitle"
+      >
+        <div class="modal-header">
+          <h3 id="settingsTitle">Pengaturan</h3>
+          <button class="modal-close" aria-label="Tutup" data-action="close">
+            ×
+          </button>
+        </div>
+
+        <div class="modal-content card">
+          <p>Atur preferensi aplikasi Anda di sini.</p>
+          <div style="margin-top: 12px">
+            <button id="backup-export" class="btn">Backup / Ekspor</button>
+          </div>
+          <!-- Theme selector -->
+          <fieldset id="themeFieldset">
+            <legend>Pilih Tema</legend>
+            <label
+              ><input type="radio" name="theme" value="system" checked />
+              Default System</label
+            >
+            <label
+              ><input type="radio" name="theme" value="light" /> Terang</label
+            >
+            <label
+              ><input type="radio" name="theme" value="dark" /> Gelap</label
+            >
+            <p class="muted-note">
+              Default System mengikuti pengaturan OS (gelap/terang).
+            </p>
+          </fieldset>
+          <!-- Mode selector (Bengkel / Toko) - Toko locked for now -->
+          <fieldset id="modeFieldset" style="margin-top: 12px">
+            <legend>Mode Aplikasi</legend>
+            <label
+              ><input type="radio" name="appMode" value="bengkel" /> Bengkel
+              (Gratis)</label
+            >
+            <label
+              ><input type="radio" name="appMode" value="toko" disabled /> Toko
+              (Fitur berbayar — terkunci)</label
+            >
+            <p class="muted-note">
+              Mode Toko terkunci untuk sekarang. Fokus ke Mode Bengkel terlebih
+              dahulu.
+            </p>
+          </fieldset>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" data-action="close">Batal</button>
+          <button class="btn btn-primary" id="save-settings">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/api/supabase-client.js"></script>
+    <script src="js/api/items-api.js"></script>
+    <script src="js/api/sparepart-api.js"></script>
+    <script src="js/api/units-api-db.js"></script>
+    <script src="js/api/pembelian-api-db.js"></script>
+    <script src="js/api/pengguna-api-db.js"></script>
+    <script src="js/api/supplier-api-db.js"></script>
+    <script src="js/api/pembelian-api.js"></script>
+    <script src="js/api/expenses-api.js"></script>
+    <script src="js/api/jasa-api.js"></script>
+    <script src="js/api/jasa-api-db.js"></script>
+    <script src="js/ui/navigation.js"></script>
+    <script src="js/ui/filterPanels.js"></script>
+    <script src="js/ui/units-ui.js"></script>
+    <script src="js/ui/units-ui.db.js"></script>
+    <script src="js/ui/master-ui.js"></script>
+    <script src="js/ui/items-ui.js"></script>
+    <script src="js/ui/sparepart-ui.js"></script>
+    <script src="js/ui/modal.js"></script>
+    <script src="js/ui/fab.js"></script>
+    <script src="js/ui/jasa-ui.js"></script>
+    <script src="js/ui/jasa-ui.db.js"></script>
+    <script src="js/ui/theme.js"></script>
+    <script src="js/ui/iconsLoader.js"></script>
+    <script src="js/ui/pembelian-ui.db.js"></script>
+    <script src="js/ui/pengguna-ui.db.js"></script>
+    <script src="js/ui/supplier-ui.db.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
