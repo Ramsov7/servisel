@@ -1,0 +1,91 @@
+/* base.css — reset + root variables + base typography + utilities */
+:root {
+  --primary: #3B82F6; /* primary */
+  --primary-light: #60A5FA; /* lighter / hover */
+  --primary-dark: #2563EB; /* darker / accent */
+  --control-h: 40px; /* standard control height for search and filter */
+  --header-gap: 12px; /* gap between top-bar and header controls */
+  --header-inner-gap: 8px; /* gap between search row and selects */
+  --bottom-nav-h: 56px; /* default bottom nav height (used to offset FAB) */
+  --fab-gap: 36px; /* gap between FAB and bottom nav (increased to raise FAB) */
+  --fab-right: 28px; /* default right offset from viewport edge for FAB */
+
+  /* Theme variables (light defaults) */
+  --bg: #f7f7f7;
+  --text: #111827;
+  --muted: #6b7280;
+  --surface: #ffffff;
+  --header-bg: #111111;
+  --header-text: #ffffff;
+  --nav-bg: var(--header-bg);
+
+  /* Modern UI tokens */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --elevation-1: 0 1px 3px rgba(16,24,40,0.06);
+  --elevation-2: 0 6px 18px rgba(16,24,40,0.08);
+  --glass: rgba(255,255,255,0.6);
+  --transition-fast: 160ms;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar { display: none; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
+}
+
+/* If the OS/browser prefers dark mode, apply dark theme variables immediately
+   to avoid a flash of white before JS toggles the data-theme attribute. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f12;
+    --bg-2: #0f1620;
+    --surface: #0f1720;
+    --text: #e6eef8;
+    --muted: #94a3b8;
+    --primary: #60a5fa;
+    --primary-dark: #2563eb;
+    --header-bg: #0b1116;
+    --nav-bg: rgba(8,12,16,0.9);
+    --card-border: rgba(255,255,255,0.04);
+    --elevation-1: 0 1px 6px rgba(2,6,23,0.6);
+    --elevation-2: 0 8px 28px rgba(2,6,23,0.65);
+  }
+}
+
+/* Global: make interactive controls touch-friendly and keep keyboard focus visible */
+button, a, input, select, textarea, [role="button"] {
+  -webkit-tap-highlight-color: transparent; /* remove blue highlight on mobile */
+  touch-action: manipulation; /* prefer-handling for taps */
+  -ms-touch-action: manipulation;
+}
+
+/* Remove default outlines for pointer interactions but keep for keyboard users */
+button:focus, a:focus, input:focus, select:focus, textarea:focus, [role="button"]:focus {
+  outline: none;
+}
+
+/* Only show a visible focus style for keyboard navigation */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 4px 18px rgba(59,130,246,0.14), 0 0 0 4px rgba(59,130,246,0.08);
+  border-radius: 8px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.hidden { display: none !important; }
+.text-muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+/* Accessibility helper: visually hidden but available to screen readers */
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }

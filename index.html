@@ -3,16 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HP Inventory</title>
+    <title>Servisel</title>
 
     <!-- Apply theme early to avoid flash of opposite theme before JS runs -->
-    <script src="js/ui/theme-init.js" defer></script>
+    <script>
+      (function () {
+        try {
+          var key = "app.theme";
+          var stored = localStorage.getItem(key);
+          var theme = "light";
+          if (!stored || stored === "system") {
+            theme =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          } else {
+            theme = stored;
+          }
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
 
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/themes.css" />
-    <link rel="icon" href="assets/logos/servisel.png" type="image/png" />
+    <link
+      rel="icon"
+      href="assets/logos/servisel-transparan.png"
+      type="image/png"
+    />
     <!-- Inline critical CSS: hide header immediately to avoid flash before external CSS loads -->
     <style>
       /* Hide header until JS explicitly shows it by adding html.app-ready.show-header */
@@ -181,7 +205,7 @@
         <div class="card"></div>
       </section>
 
-      <section id="master">
+      <section id="katalog">
         <div class="card"></div>
       </section>
 
@@ -307,33 +331,33 @@
 
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/api/supabaseClient.js"></script>
-    <script src="js/api/itemsApi.js"></script>
-    <script src="js/api/sparepartApi.js"></script>
-    <script src="js/api/unitsApiDb.js"></script>
-    <script src="js/api/pembelianApiDb.js"></script>
-    <script src="js/api/penggunaApiDb.js"></script>
-    <script src="js/api/supplierApiDb.js"></script>
-    <script src="js/api/pembelianApi.js"></script>
-    <script src="js/api/expensesApi.js"></script>
-    <script src="js/api/jasaApi.js"></script>
-    <script src="js/api/jasaApiDb.js"></script>
+    <script src="js/api/supabase-client.js"></script>
+    <script src="js/api/items-api.js"></script>
+    <script src="js/api/sparepart-api.js"></script>
+    <script src="js/api/units-api-db.js"></script>
+    <script src="js/api/pembelian-api-db.js"></script>
+    <script src="js/api/pengguna-api-db.js"></script>
+    <script src="js/api/supplier-api-db.js"></script>
+    <script src="js/api/pembelian-api.js"></script>
+    <script src="js/api/expenses-api.js"></script>
+    <script src="js/api/jasa-api.js"></script>
+    <script src="js/api/jasa-api-db.js"></script>
     <script src="js/ui/navigation.js"></script>
-    <script src="js/ui/filterPanels.js"></script>
-    <script src="js/ui/unitsUI.js"></script>
-    <script src="js/ui/unitsUI.db.js"></script>
-    <script src="js/ui/masterUI.js"></script>
-    <script src="js/ui/itemsUI.js"></script>
-    <script src="js/ui/sparepartUI.js"></script>
+    <script src="js/ui/filter-panels.js"></script>
+    <script src="js/ui/units-ui.js"></script>
+    <script src="js/ui/units-ui.db.js"></script>
+    <script src="js/ui/katalog-ui.js"></script>
+    <script src="js/ui/items-ui.js"></script>
+    <script src="js/ui/sparepart-ui.js"></script>
     <script src="js/ui/modal.js"></script>
     <script src="js/ui/fab.js"></script>
-    <script src="js/ui/jasaUI.js"></script>
-    <script src="js/ui/jasaUI.db.js"></script>
+    <script src="js/ui/jasa-ui.js"></script>
+    <script src="js/ui/jasa-ui.db.js"></script>
     <script src="js/ui/theme.js"></script>
-    <script src="js/ui/iconsLoader.js"></script>
-    <script src="js/ui/pembelianUI.db.js"></script>
-    <script src="js/ui/penggunaUI.db.js"></script>
-    <script src="js/ui/supplierUI.db.js"></script>
+    <script src="js/ui/icons-loader.js"></script>
+    <script src="js/ui/pembelian-ui.db.js"></script>
+    <script src="js/ui/pengguna-ui.db.js"></script>
+    <script src="js/ui/supplier-ui.db.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>
